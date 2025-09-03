@@ -30,4 +30,23 @@ public class GenericRepositoryImpl implements GenericRepository {
                 .setParameter("val", value)
                 .getResultList();
     }
+
+    @Override
+    public <T> T save(T entity) {
+        return em.merge(entity);
+    }
+
+    @Override
+    public <T> void delete(T entity) {
+        T managed = em.contains(entity) ? entity : em.merge(entity);
+        em.remove(managed);
+    }
+
+    @Override
+    public <T> void deleteById(Class<T> entityClass, Object id) {
+        T entity = em.find(entityClass, id);
+        if (entity != null) {
+            em.remove(entity);
+        }
+    }
 }

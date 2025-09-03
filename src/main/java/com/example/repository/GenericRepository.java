@@ -9,4 +9,9 @@ public interface GenericRepository {
 
     <T> List<T> findBy(Class<T> entityClass, String fieldName, Object value);
 
+    <T> T save(T entity);
+
+    <T> void delete(T entity);
+
+    <T> void deleteById(Class<T> entityClass, Object id);
 }

@@ -1,4 +1,12 @@
 package com.example.repository;
 
+import java.util.List;
+
 public interface GenericRepository {
+    <T> T findById(Class<T> entityClass, Object id);
+
+    <T> List<T> findAll(Class<T> entityClass);
+
+    <T> List<T> findBy(Class<T> entityClass, String fieldName, Object value);
+
 }

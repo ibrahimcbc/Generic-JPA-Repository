@@ -25,4 +25,5 @@ public interface GenericRepository {
 
     <T> List<T> findAllSorted(Class<T> entityClass, String fieldName, boolean ascending);
 
+    <T> List<T> findAllPaged(Class<T> entityClass, int page, int pageSize);
 }

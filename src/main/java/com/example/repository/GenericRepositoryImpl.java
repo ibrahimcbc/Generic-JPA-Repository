@@ -126,4 +126,18 @@ public class GenericRepositoryImpl implements GenericRepository {
             throw new InvalidEntityException(entityClass.getSimpleName() + " bir JPA entity değildir.");
         }
     }
+
+
+    @Override
+    public <T> List<T> findAllPaged(Class<T> entityClass, int page, int pageSize) {
+        validateEntityClass(entityClass);
+        if (page <= 0 || pageSize <= 0) {
+            throw new InvalidPaginationException("Sayfa ve sayfa boyutu 0 veya negatif olamaz.");
+        }
+        String entityName = entityClass.getSimpleName();
+        return em.createQuery("from " + entityName, entityClass)
+                .setFirstResult((page - 1) * pageSize)
+                .setMaxResults(pageSize)
+                .getResultList();
+    }
 }

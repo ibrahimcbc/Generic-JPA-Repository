@@ -18,4 +18,7 @@ public interface GenericRepository {
     <T> long count(Class<T> entityClass);
 
     <T> boolean existsById(Class<T> entityClass, Object id);
+
+    <T> T findOneBy(Class<T> entityClass, String fieldName, Object value);
+
 }

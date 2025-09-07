@@ -69,6 +69,26 @@ public class GenericRepositoryImpl implements GenericRepository {
         return em.find(entityClass, id) != null;
     }
 
+    @Override
+    public <T> T findOneBy(Class<T> entityClass, String fieldName, Object value) {
+        validateEntityClass(entityClass);
+        if (fieldName == null || fieldName.trim().isEmpty()) {
+            throw new InvalidFieldException("Alan adı boş olamaz.");
+        }
+        String entityName = entityClass.getSimpleName();
+        String ql = "from " + entityName + " e where e." + fieldName + " = :val";
+        List<T> results = em.createQuery(ql, entityClass)
+                .setParameter("val", value)
+                .getResultList();
+        if (results.isEmpty()) {
+            throw new EntityNotFoundException(entityClass.getSimpleName() + " için " + fieldName + " bulunamadı: " + value);
+        }
+        if (results.size() > 1) {
+            throw new NonUniqueResultException(entityClass.getSimpleName() + " için birden fazla sonuç bulundu (field=" + fieldName + ")");
+        }
+        return results.get(0);
+    }
+
     private <T> void validateEntityClass(Class<T> entityClass) {
         if (entityClass == null) {
             throw new InvalidEntityException("Entity sınıfı null olamaz.");

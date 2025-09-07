@@ -16,4 +16,6 @@ public interface GenericRepository {
     <T> void deleteById(Class<T> entityClass, Object id);
 
     <T> long count(Class<T> entityClass);
+
+    <T> boolean existsById(Class<T> entityClass, Object id);
 }

@@ -60,6 +60,15 @@ public class GenericRepositoryImpl implements GenericRepository {
                 .getSingleResult();
     }
 
+    @Override
+    public <T> boolean existsById(Class<T> entityClass, Object id) {
+        validateEntityClass(entityClass);
+        if (id == null) {
+            throw new InvalidIdException("ID null olamaz: " + entityClass.getSimpleName());
+        }
+        return em.find(entityClass, id) != null;
+    }
+
     private <T> void validateEntityClass(Class<T> entityClass) {
         if (entityClass == null) {
             throw new InvalidEntityException("Entity sınıfı null olamaz.");

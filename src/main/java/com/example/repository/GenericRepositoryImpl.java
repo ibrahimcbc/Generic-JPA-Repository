@@ -15,17 +15,30 @@ public class GenericRepositoryImpl implements GenericRepository {
 
     @Override
     public <T> T findById(Class<T> entityClass, Object id) {
-        return em.find(entityClass, id);
+        validateEntityClass(entityClass);
+        if (id == null) {
+            throw new InvalidIdException("ID null olamaz: " + entityClass.getSimpleName());
+        }
+        T entity = em.find(entityClass, id);
+        if (entity == null) {
+            throw new EntityNotFoundException(entityClass.getSimpleName() + " için ID bulunamadı: " + id);
+        }
+        return entity;
     }
 
     @Override
     public <T> List<T> findAll(Class<T> entityClass) {
+        validateEntityClass(entityClass);
         String entityName = entityClass.getSimpleName();
         return em.createQuery("from " + entityName, entityClass).getResultList();
     }
 
     @Override
     public <T> List<T> findBy(Class<T> entityClass, String fieldName, Object value) {
+        validateEntityClass(entityClass);
+        if (fieldName == null || fieldName.trim().isEmpty()) {
+            throw new InvalidFieldException("Alan adı boş olamaz.");
+        }
         String entityName = entityClass.getSimpleName();
         String ql = "from " + entityName + " e where e." + fieldName + " = :val";
         return em.createQuery(ql, entityClass)
@@ -35,21 +48,43 @@ public class GenericRepositoryImpl implements GenericRepository {
 
     @Override
     public <T> T save(T entity) {
+        if (entity == null) {
+            throw new InvalidEntityException("Kaydedilecek entity null olamaz.");
+        }
+        Class<?> entityClass = entity.getClass();
+        if (!entityClass.isAnnotationPresent(javax.persistence.Entity.class)) {
+            throw new InvalidEntityException(entityClass.getSimpleName() + " bir JPA entity değildir.");
+        }
         return em.merge(entity);
     }
 
     @Override
     public <T> void delete(T entity) {
+        if (entity == null) {
+            throw new InvalidEntityException("Silinecek entity null olamaz.");
+        }
+        Class<?> entityClass = entity.getClass();
+        if (!entityClass.isAnnotationPresent(javax.persistence.Entity.class)) {
+            throw new InvalidEntityException(entityClass.getSimpleName() + " bir JPA entity değildir.");
+        }
         T managed = em.contains(entity) ? entity : em.merge(entity);
+        if (managed == null) {
+            throw new EntityNotFoundException("Entity silinemedi: " + entityClass.getSimpleName());
+        }
         em.remove(managed);
     }
 
     @Override
     public <T> void deleteById(Class<T> entityClass, Object id) {
-        T entity = em.find(entityClass, id);
-        if (entity != null) {
-            em.remove(entity);
+        validateEntityClass(entityClass);
+        if (id == null) {
+            throw new InvalidIdException("ID null olamaz: " + entityClass.getSimpleName());
         }
+        T entity = em.find(entityClass, id);
+        if (entity == null) {
+            throw new EntityNotFoundException(entityClass.getSimpleName() + " için ID bulunamadı: " + id);
+        }
+        em.remove(entity);
     }
 
     @Override

@@ -105,6 +105,18 @@ public class GenericRepositoryImpl implements GenericRepository {
                 .getResultList();
     }
 
+    @Override
+    public <T> List<T> findAllSorted(Class<T> entityClass, String sortField, boolean ascending) {
+        validateEntityClass(entityClass);
+        if (sortField == null || sortField.trim().isEmpty()) {
+            throw new InvalidFieldException("Sıralama alanı boş olamaz.");
+        }
+        String entityName = entityClass.getSimpleName();
+        String order = ascending ? "asc" : "desc";
+        String ql = "from " + entityName + " e order by lower(e." + sortField + ") " + order;
+        return em.createQuery(ql, entityClass).getResultList();
+    }
+
 
     private <T> void validateEntityClass(Class<T> entityClass) {
         if (entityClass == null) {

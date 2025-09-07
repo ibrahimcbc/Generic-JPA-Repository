@@ -23,5 +23,6 @@ public interface GenericRepository {
 
     <T> List<T> findByLike(Class<T> entityClass, String fieldName, String pattern);
 
+    <T> List<T> findAllSorted(Class<T> entityClass, String fieldName, boolean ascending);
 
 }

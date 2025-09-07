@@ -21,4 +21,7 @@ public interface GenericRepository {
 
     <T> T findOneBy(Class<T> entityClass, String fieldName, Object value);
 
+    <T> List<T> findByLike(Class<T> entityClass, String fieldName, String pattern);
+
+
 }

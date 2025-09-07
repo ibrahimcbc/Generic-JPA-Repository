@@ -89,6 +89,23 @@ public class GenericRepositoryImpl implements GenericRepository {
         return results.get(0);
     }
 
+    @Override
+    public <T> List<T> findByLike(Class<T> entityClass, String fieldName, String pattern) {
+        validateEntityClass(entityClass);
+        if (fieldName == null || fieldName.trim().isEmpty()) {
+            throw new InvalidFieldException("Alan adı boş olamaz.");
+        }
+        if (pattern == null) {
+            throw new InvalidFieldException("Pattern null olamaz.");
+        }
+        String entityName = entityClass.getSimpleName();
+        String ql = "from " + entityName + " e where e." + fieldName + " like :pattern";
+        return em.createQuery(ql, entityClass)
+                .setParameter("pattern", pattern)
+                .getResultList();
+    }
+
+
     private <T> void validateEntityClass(Class<T> entityClass) {
         if (entityClass == null) {
             throw new InvalidEntityException("Entity sınıfı null olamaz.");

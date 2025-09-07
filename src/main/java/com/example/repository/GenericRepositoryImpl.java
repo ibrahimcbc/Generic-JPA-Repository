@@ -1,5 +1,7 @@
 package com.example.repository;
 
+import com.example.exception.*;
+
 import javax.persistence.EntityManager;
 import java.util.List;
 
@@ -47,6 +49,23 @@ public class GenericRepositoryImpl implements GenericRepository {
         T entity = em.find(entityClass, id);
         if (entity != null) {
             em.remove(entity);
+        }
+    }
+
+    @Override
+    public <T> long count(Class<T> entityClass) {
+        validateEntityClass(entityClass);
+        String entityName = entityClass.getSimpleName();
+        return em.createQuery("select count(e) from " + entityName + " e", Long.class)
+                .getSingleResult();
+    }
+
+    private <T> void validateEntityClass(Class<T> entityClass) {
+        if (entityClass == null) {
+            throw new InvalidEntityException("Entity sınıfı null olamaz.");
+        }
+        if (!entityClass.isAnnotationPresent(javax.persistence.Entity.class)) {
+            throw new InvalidEntityException(entityClass.getSimpleName() + " bir JPA entity değildir.");
         }
     }
 }

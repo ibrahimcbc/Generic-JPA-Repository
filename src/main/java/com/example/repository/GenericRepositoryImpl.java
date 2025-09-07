@@ -117,16 +117,11 @@ public class GenericRepositoryImpl implements GenericRepository {
         return em.createQuery(ql, entityClass).getResultList();
     }
 
-
-    private <T> void validateEntityClass(Class<T> entityClass) {
-        if (entityClass == null) {
-            throw new InvalidEntityException("Entity sınıfı null olamaz.");
-        }
-        if (!entityClass.isAnnotationPresent(javax.persistence.Entity.class)) {
-            throw new InvalidEntityException(entityClass.getSimpleName() + " bir JPA entity değildir.");
-        }
+    @Override
+    public <T> FindBuilder<T> findBy(Class<T> entityClass) {
+        validateEntityClass(entityClass);
+        return new FindBuilder<>(em, entityClass);
     }
-
 
     @Override
     public <T> List<T> findAllPaged(Class<T> entityClass, int page, int pageSize) {
@@ -140,4 +135,15 @@ public class GenericRepositoryImpl implements GenericRepository {
                 .setMaxResults(pageSize)
                 .getResultList();
     }
+
+
+    private <T> void validateEntityClass(Class<T> entityClass) {
+        if (entityClass == null) {
+            throw new InvalidEntityException("Entity sınıfı null olamaz.");
+        }
+        if (!entityClass.isAnnotationPresent(javax.persistence.Entity.class)) {
+            throw new InvalidEntityException(entityClass.getSimpleName() + " bir JPA entity değildir.");
+        }
+    }
+
 }

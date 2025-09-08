@@ -171,6 +171,36 @@ public class GenericRepositoryImpl implements GenericRepository {
                 .getResultList();
     }
 
+    @Override
+    public <T> void listAll(Class<T> entityClass, List<T> result) {
+        validateEntityClass(entityClass);
+
+        System.out.println("---- Listing all " + entityClass.getSimpleName() + " ----");
+        if (result.isEmpty()) {
+            System.out.println("No records found.");
+        } else {
+            result.forEach(System.out::println);
+        }
+    }
+
+    @Override
+    public <T> void listAll(Class<T> entityClass, List<T> result, int row) {
+        validateEntityClass(entityClass);
+
+        if (row <= 0) {
+            throw new InvalidPaginationException("Row count must be greater than 0.");
+        }
+
+        System.out.println("---- Listing first " + row + " " + entityClass.getSimpleName() + " ----");
+        if (result.isEmpty()) {
+            System.out.println("No records found.");
+        } else {
+            result.stream()
+                    .limit(row)
+                    .forEach(System.out::println);
+        }
+    }
+
 
     private <T> void validateEntityClass(Class<T> entityClass) {
         if (entityClass == null) {

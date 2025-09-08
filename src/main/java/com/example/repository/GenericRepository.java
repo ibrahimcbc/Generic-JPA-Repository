@@ -28,4 +28,8 @@ public interface GenericRepository {
     <T> List<T> findAllPaged(Class<T> entityClass, int page, int pageSize);
 
     <T> FindBuilder<T> findBy(Class<T> entityClass);
+
+    <T> void listAll(Class<T> entityClass, List<T> result);
+
+    <T> void listAll(Class<T> entityClass, List<T> result, int row);
 }
